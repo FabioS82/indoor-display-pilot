@@ -1,0 +1,565 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout e Planos - Digital Signage</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 2px 8px;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+        .sidebar .nav-link i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        .main-content {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+        }
+        .plan-card {
+            border: 2px solid #dee2e6;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .plan-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+        .plan-card.popular {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+        .plan-card.popular::before {
+            content: 'Mais Popular';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .payment-method {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .payment-method:hover,
+        .payment-method.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -250px;
+                z-index: 1000;
+                width: 250px;
+            }
+            .sidebar.show {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse" id="sidebar">
+                <div class="position-sticky pt-3">
+                    <div class="navbar-brand d-flex align-items-center mb-4 px-3">
+                        <i class="bi bi-display me-2"></i>
+                        Digital Signage
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">
+                                <i class="bi bi-speedometer2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="content.html">
+                                <i class="bi bi-folder-fill"></i>
+                                Conteúdo
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="ai-images.html">
+                                <i class="bi bi-robot"></i>
+                                AI Imagens
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="music.html">
+                                <i class="bi bi-music-note-beamed"></i>
+                                Músicas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="global-library.html">
+                                <i class="bi bi-globe"></i>
+                                Biblioteca Global
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="playlists.html">
+                                <i class="bi bi-list-ul"></i>
+                                Playlists
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="screens.html">
+                                <i class="bi bi-tv"></i>
+                                Screens
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="widgets.html">
+                                <i class="bi bi-app"></i>
+                                Widgets
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="checkout.html">
+                                <i class="bi bi-credit-card"></i>
+                                Checkout e Planos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="reports.html">
+                                <i class="bi bi-graph-up"></i>
+                                Relatórios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="admin.html">
+                                <i class="bi bi-gear"></i>
+                                Administração
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Planos e Pagamentos</h1>
+                    <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+
+                <!-- Current Plan Status -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <h5><i class="bi bi-star me-2"></i>Plano Atual: <span class="badge bg-primary">Básico</span></h5>
+                                        <p class="mb-0">3 screens • 5GB armazenamento • Suporte por email</p>
+                                        <small class="text-muted">Renovação em 15/02/2024</small>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <h4 class="text-success">R$ 49,90/mês</h4>
+                                        <button class="btn btn-outline-primary btn-sm">Alterar Plano</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Plans -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h4 class="mb-3">Nossos Planos</h4>
+                    </div>
+                    
+                    <!-- Basic Plan -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card plan-card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Básico</h5>
+                                <div class="price mb-3">R$ 49,90</div>
+                                <p class="text-muted">/mês</p>
+                                
+                                <ul class="list-unstyled mb-4">
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>3 screens</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>5GB armazenamento</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Playlists ilimitadas</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Widgets básicos</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Suporte por email</li>
+                                </ul>
+                                
+                                <button class="btn btn-outline-primary w-100" onclick="selectPlan('basic')">
+                                    Plano Atual
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Professional Plan -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card plan-card popular h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Profissional</h5>
+                                <div class="price mb-3">R$ 99,90</div>
+                                <p class="text-muted">/mês</p>
+                                
+                                <ul class="list-unstyled mb-4">
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>10 screens</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>20GB armazenamento</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Playlists ilimitadas</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Todos os widgets</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>IA para imagens</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Suporte prioritário</li>
+                                </ul>
+                                
+                                <button class="btn btn-primary w-100" onclick="selectPlan('professional')">
+                                    Fazer Upgrade
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enterprise Plan -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card plan-card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Empresarial</h5>
+                                <div class="price mb-3">R$ 199,90</div>
+                                <p class="text-muted">/mês</p>
+                                
+                                <ul class="list-unstyled mb-4">
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Screens ilimitadas</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>100GB armazenamento</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>API personalizada</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>White label</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Relatórios avançados</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Suporte 24/7</li>
+                                </ul>
+                                
+                                <button class="btn btn-primary w-100" onclick="selectPlan('enterprise')">
+                                    Fazer Upgrade
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="bi bi-credit-card me-2"></i>Métodos de Pagamento</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="payment-method" onclick="selectPaymentMethod('pix')">
+                                            <div class="text-center">
+                                                <i class="bi bi-qr-code display-4 text-primary mb-2"></i>
+                                                <h6>PIX</h6>
+                                                <small class="text-muted">Instantâneo</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="payment-method" onclick="selectPaymentMethod('card')">
+                                            <div class="text-center">
+                                                <i class="bi bi-credit-card display-4 text-primary mb-2"></i>
+                                                <h6>Cartão de Crédito</h6>
+                                                <small class="text-muted">Parcelamento disponível</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="payment-method" onclick="selectPaymentMethod('boleto')">
+                                            <div class="text-center">
+                                                <i class="bi bi-file-earmark-text display-4 text-primary mb-2"></i>
+                                                <h6>Boleto Bancário</h6>
+                                                <small class="text-muted">Vencimento em 3 dias</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment History -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5><i class="bi bi-clock-history me-2"></i>Histórico de Pagamentos</h5>
+                                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadReceiptModal">
+                                    <i class="bi bi-upload me-1"></i>Enviar Comprovante
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Data</th>
+                                                <th>Plano</th>
+                                                <th>Valor</th>
+                                                <th>Método</th>
+                                                <th>Status</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>15/01/2024</td>
+                                                <td>Básico</td>
+                                                <td>R$ 49,90</td>
+                                                <td>PIX</td>
+                                                <td><span class="badge bg-success">Pago</span></td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm">
+                                                        <i class="bi bi-download"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>15/12/2023</td>
+                                                <td>Básico</td>
+                                                <td>R$ 49,90</td>
+                                                <td>Cartão</td>
+                                                <td><span class="badge bg-success">Pago</span></td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm">
+                                                        <i class="bi bi-download"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>15/11/2023</td>
+                                                <td>Básico</td>
+                                                <td>R$ 49,90</td>
+                                                <td>PIX</td>
+                                                <td><span class="badge bg-success">Pago</span></td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm">
+                                                        <i class="bi bi-download"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Upload Receipt Modal -->
+    <div class="modal fade" id="uploadReceiptModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enviar Comprovante de Pagamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Pagamento:</label>
+                            <select class="form-select">
+                                <option>PIX</option>
+                                <option>Transferência Bancária</option>
+                                <option>Boleto Bancário</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Data do Pagamento:</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Valor Pago:</label>
+                            <input type="text" class="form-control" placeholder="R$ 0,00">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Comprovante:</label>
+                            <input type="file" class="form-control" accept="image/*,.pdf">
+                            <small class="text-muted">Formatos aceitos: JPG, PNG, PDF (máx. 5MB)</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observações:</label>
+                            <textarea class="form-control" rows="3" placeholder="Informações adicionais sobre o pagamento"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Enviar Comprovante</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal fade" id="checkoutModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Finalizar Upgrade</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Plano selecionado:</strong>
+                        </div>
+                        <div class="col-6 text-end" id="selectedPlan">
+                            Profissional
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Valor mensal:</strong>
+                        </div>
+                        <div class="col-6 text-end" id="selectedPrice">
+                            R$ 99,90
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <label class="form-label">Método de Pagamento:</label>
+                        <div id="paymentMethodForm">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Confirmar Pagamento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let selectedPlanData = null;
+        let selectedPaymentMethodData = null;
+
+        function selectPlan(plan) {
+            const plans = {
+                basic: { name: 'Básico', price: 'R$ 49,90' },
+                professional: { name: 'Profissional', price: 'R$ 99,90' },
+                enterprise: { name: 'Empresarial', price: 'R$ 199,90' }
+            };
+            
+            selectedPlanData = plans[plan];
+            
+            if (plan !== 'basic') {
+                const modal = new bootstrap.Modal(document.getElementById('checkoutModal'));
+                document.getElementById('selectedPlan').textContent = selectedPlanData.name;
+                document.getElementById('selectedPrice').textContent = selectedPlanData.price;
+                modal.show();
+            }
+        }
+
+        function selectPaymentMethod(method) {
+            document.querySelectorAll('.payment-method').forEach(pm => {
+                pm.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            selectedPaymentMethodData = method;
+            
+            const form = document.getElementById('paymentMethodForm');
+            
+            switch(method) {
+                case 'pix':
+                    form.innerHTML = `
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Após confirmar, você receberá o QR Code para pagamento instantâneo.
+                        </div>
+                    `;
+                    break;
+                case 'card':
+                    form.innerHTML = `
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Número do cartão">
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="text" class="form-control" placeholder="MM/AA">
+                            </div>
+                            <div class="col-6">
+                                <input type="text" class="form-control" placeholder="CVV">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'boleto':
+                    form.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Boleto bancário com vencimento em 3 dias úteis.
+                        </div>
+                    `;
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>

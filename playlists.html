@@ -1,0 +1,520 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlists - Digital Signage</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 2px 8px;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+        .sidebar .nav-link i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        .main-content {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+        }
+        .playlist-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        .playlist-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .content-source-tabs .nav-link {
+            color: #667eea;
+            border-color: transparent;
+        }
+        .content-source-tabs .nav-link.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .draggable-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: move;
+            transition: all 0.3s;
+        }
+        .draggable-item:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+        .schedule-slot {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+        .schedule-slot:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -250px;
+                z-index: 1000;
+                width: 250px;
+            }
+            .sidebar.show {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse" id="sidebar">
+                <div class="position-sticky pt-3">
+                    <div class="navbar-brand d-flex align-items-center mb-4 px-3">
+                        <i class="bi bi-display me-2"></i>
+                        Digital Signage
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">
+                                <i class="bi bi-speedometer2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="content.html">
+                                <i class="bi bi-folder-fill"></i>
+                                Conteúdo
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="ai-images.html">
+                                <i class="bi bi-robot"></i>
+                                AI Imagens
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="music.html">
+                                <i class="bi bi-music-note-beamed"></i>
+                                Músicas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="global-library.html">
+                                <i class="bi bi-globe"></i>
+                                Biblioteca Global
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="playlists.html">
+                                <i class="bi bi-list-ul"></i>
+                                Playlists
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="screens.html">
+                                <i class="bi bi-tv"></i>
+                                Screens
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="widgets.html">
+                                <i class="bi bi-app"></i>
+                                Widgets
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="checkout.html">
+                                <i class="bi bi-credit-card"></i>
+                                Checkout e Planos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="reports.html">
+                                <i class="bi bi-graph-up"></i>
+                                Relatórios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="admin.html">
+                                <i class="bi bi-gear"></i>
+                                Administração
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Gerenciar Playlists</h1>
+                    <div>
+                        <button class="btn btn-primary d-md-none me-2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPlaylistModal">
+                            <i class="bi bi-plus-circle me-2"></i>Nova Playlist
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Playlists List -->
+                <div class="row">
+                    <div class="col-12">
+                        <!-- Playlist Item 1 -->
+                        <div class="playlist-item">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h5 class="mb-1">Playlist Principal</h5>
+                                    <p class="text-muted mb-2">5 itens • Duração total: 12:30</p>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-success me-2">Ativa</span>
+                                        <small class="text-muted">Última modificação: 25/01/2024</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <button class="btn btn-outline-primary btn-sm me-2" onclick="editPlaylist('principal')">
+                                        <i class="bi bi-pencil me-1"></i>Editar
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                                        <i class="bi bi-clock me-1"></i>Agendar
+                                    </button>
+                                    <div class="dropdown d-inline">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-copy me-2"></i>Duplicar</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-download me-2"></i>Exportar</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Excluir</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Playlist Item 2 -->
+                        <div class="playlist-item">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h5 class="mb-1">Promoções Especiais</h5>
+                                    <p class="text-muted mb-2">3 itens • Duração total: 8:45</p>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-warning me-2">Agendada</span>
+                                        <small class="text-muted">Execução: 01/02/2024 às 09:00</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <button class="btn btn-outline-primary btn-sm me-2" onclick="editPlaylist('promocoes')">
+                                        <i class="bi bi-pencil me-1"></i>Editar
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                                        <i class="bi bi-clock me-1"></i>Agendar
+                                    </button>
+                                    <div class="dropdown d-inline">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-copy me-2"></i>Duplicar</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="bi bi-download me-2"></i>Exportar</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Excluir</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div class="text-center py-5" id="emptyState" style="display: none;">
+                            <i class="bi bi-list-ul display-1 text-muted mb-3"></i>
+                            <h5 class="text-muted">Nenhuma playlist criada</h5>
+                            <p class="text-muted">Crie sua primeira playlist para organizar o conteúdo</p>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPlaylistModal">
+                                Criar Primeira Playlist
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Create Playlist Modal -->
+    <div class="modal fade" id="createPlaylistModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Criar Nova Playlist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <form>
+                                <div class="mb-3">
+                                    <label class="form-label">Nome da Playlist:</label>
+                                    <input type="text" class="form-control" placeholder="Ex: Playlist Principal">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Descrição:</label>
+                                    <textarea class="form-control" rows="3" placeholder="Descreva o objetivo desta playlist"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Transição entre itens:</label>
+                                    <select class="form-select">
+                                        <option>Fade (Suave)</option>
+                                        <option>Slide Left</option>
+                                        <option>Slide Right</option>
+                                        <option>Zoom In</option>
+                                        <option>Sem transição</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Duração padrão (imagens):</label>
+                                    <input type="number" class="form-control" value="5" min="1" max="60">
+                                    <small class="text-muted">segundos</small>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-8">
+                            <!-- Content Sources Tabs -->
+                            <ul class="nav nav-tabs content-source-tabs mb-3">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#myContent">Meu Conteúdo</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#globalLibrary">Biblioteca Global</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#widgets">Widgets</a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="myContent">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <h6>Conteúdo Disponível</h6>
+                                            <div style="max-height: 300px; overflow-y: auto;">
+                                                <div class="draggable-item">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-play-circle me-2"></i>
+                                                        <span>video1.mp4</span>
+                                                        <small class="text-muted ms-auto">30s</small>
+                                                    </div>
+                                                </div>
+                                                <div class="draggable-item">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-image me-2"></i>
+                                                        <span>imagem1.jpg</span>
+                                                        <small class="text-muted ms-auto">5s</small>
+                                                    </div>
+                                                </div>
+                                                <div class="draggable-item">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-play-circle me-2"></i>
+                                                        <span>video2.mp4</span>
+                                                        <small class="text-muted ms-auto">45s</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <h6>Playlist <small class="text-muted">(arraste aqui)</small></h6>
+                                            <div id="playlistContainer" style="min-height: 300px; border: 2px dashed #dee2e6; border-radius: 8px; padding: 15px;">
+                                                <p class="text-center text-muted">Arraste itens aqui para criar a playlist</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="globalLibrary">
+                                    <p class="text-muted">Conteúdo da biblioteca global será listado aqui</p>
+                                </div>
+                                <div class="tab-pane fade" id="widgets">
+                                    <p class="text-muted">Widgets disponíveis serão listados aqui</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Criar Playlist</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agendar Playlist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Agendamento:</label>
+                            <select class="form-select" onchange="toggleScheduleOptions(this.value)">
+                                <option value="once">Uma vez</option>
+                                <option value="daily">Diariamente</option>
+                                <option value="weekly">Semanalmente</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="form-label">Data de início:</label>
+                                <input type="date" class="form-control">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Horário:</label>
+                                <input type="time" class="form-control">
+                            </div>
+                        </div>
+                        <div class="mt-3" id="customSchedule" style="display: none;">
+                            <label class="form-label">Dias da semana:</label>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="monday">
+                                        <label class="form-check-label" for="monday">Seg</label>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="tuesday">
+                                        <label class="form-check-label" for="tuesday">Ter</label>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="wednesday">
+                                        <label class="form-check-label" for="wednesday">Qua</label>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="thursday">
+                                        <label class="form-check-label" for="thursday">Qui</label>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="friday">
+                                        <label class="form-check-label" for="friday">Sex</label>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="saturday">
+                                        <label class="form-check-label" for="saturday">Sáb</label>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="sunday">
+                                        <label class="form-check-label" for="sunday">Dom</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Agendar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function editPlaylist(playlistId) {
+            // Open edit modal (would be implemented)
+            alert('Abrir editor para playlist: ' + playlistId);
+        }
+
+        function toggleScheduleOptions(value) {
+            const customSchedule = document.getElementById('customSchedule');
+            if (value === 'custom') {
+                customSchedule.style.display = 'block';
+            } else {
+                customSchedule.style.display = 'none';
+            }
+        }
+
+        // Simple drag and drop simulation
+        document.addEventListener('DOMContentLoaded', function() {
+            const draggableItems = document.querySelectorAll('.draggable-item');
+            draggableItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const playlistContainer = document.getElementById('playlistContainer');
+                    const clonedItem = this.cloneNode(true);
+                    clonedItem.classList.add('bg-light');
+                    clonedItem.innerHTML += '<button class="btn btn-sm btn-outline-danger ms-2" onclick="this.parentElement.remove()"><i class="bi bi-x"></i></button>';
+                    
+                    if (playlistContainer.children.length === 1 && playlistContainer.children[0].tagName === 'P') {
+                        playlistContainer.innerHTML = '';
+                    }
+                    
+                    playlistContainer.appendChild(clonedItem);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
