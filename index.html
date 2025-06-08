@@ -18,10 +18,11 @@
         }
         .sidebar .nav-link {
             color: rgba(255,255,255,0.8);
-            padding: 12px 20px;
+            padding: 8px 15px;
             border-radius: 8px;
             margin: 2px 8px;
             transition: all 0.3s;
+            font-size: 14px;
         }
         .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
@@ -30,8 +31,8 @@
             transform: translateX(5px);
         }
         .sidebar .nav-link i {
-            width: 20px;
-            margin-right: 10px;
+            width: 18px;
+            margin-right: 8px;
         }
         .main-content {
             background: #f8f9fa;
@@ -52,7 +53,16 @@
         .navbar-brand {
             font-weight: bold;
             color: white !important;
+            font-size: 16px;
         }
+        
+        /* Fix modal width issues */
+        .modal-dialog {
+            max-width: 90vw;
+            width: 500px;
+            margin: 1.75rem auto;
+        }
+        
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -63,6 +73,31 @@
             }
             .sidebar.show {
                 left: 0;
+            }
+            .sidebar .nav-link {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+            .sidebar .nav-link i {
+                width: 16px;
+                margin-right: 6px;
+            }
+            .navbar-brand {
+                font-size: 14px;
+            }
+            .modal-dialog {
+                width: 95vw;
+                margin: 0.5rem auto;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 991px) {
+            .sidebar .nav-link {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+            .sidebar .nav-link i {
+                margin-right: 6px;
             }
         }
     </style>
@@ -164,7 +199,7 @@
                         <div class="card stat-card">
                             <div class="card-body text-center">
                                 <i class="bi bi-cloud-upload display-4 mb-2"></i>
-                                <h3 class="card-title">0</h3>
+                                <h3 class="card-title">25</h3>
                                 <p class="card-text">Upload Contents</p>
                             </div>
                         </div>
@@ -173,7 +208,7 @@
                         <div class="card stat-card">
                             <div class="card-body text-center">
                                 <i class="bi bi-list-ul display-4 mb-2"></i>
-                                <h3 class="card-title">0</h3>
+                                <h3 class="card-title">8</h3>
                                 <p class="card-text">Created Playlists</p>
                             </div>
                         </div>
@@ -182,7 +217,7 @@
                         <div class="card stat-card">
                             <div class="card-body text-center">
                                 <i class="bi bi-tv display-4 mb-2"></i>
-                                <h3 class="card-title">0</h3>
+                                <h3 class="card-title">5</h3>
                                 <p class="card-text">Screens</p>
                             </div>
                         </div>
@@ -197,11 +232,11 @@
                                 <h5><i class="bi bi-info-circle me-2"></i>Dados do Plano</h5>
                             </div>
                             <div class="card-body">
-                                <p><strong>Plano:</strong> <span class="badge bg-primary">Básico</span></p>
-                                <p><strong>Screens permitidas:</strong> 3</p>
-                                <p><strong>Armazenamento:</strong> 1GB / 5GB</p>
+                                <p><strong>Plano:</strong> <span class="badge bg-primary">Premium</span></p>
+                                <p><strong>Screens permitidas:</strong> 10</p>
+                                <p><strong>Armazenamento:</strong> 2.5GB / 15GB</p>
                                 <div class="progress mb-2">
-                                    <div class="progress-bar" style="width: 20%"></div>
+                                    <div class="progress-bar" style="width: 17%"></div>
                                 </div>
                                 <p><strong>Renovação:</strong> 15/02/2024</p>
                                 <button class="btn btn-outline-primary btn-sm">Upgrade</button>
@@ -214,8 +249,8 @@
                                 <h5><i class="bi bi-tv me-2"></i>Screens Ativas</h5>
                             </div>
                             <div class="card-body">
-                                <p class="display-6 text-center text-success mb-3">0</p>
-                                <p class="text-center text-muted">Nenhuma screen ativa</p>
+                                <p class="display-6 text-center text-success mb-3">3</p>
+                                <p class="text-center text-muted">3 de 5 screens online</p>
                                 <div class="d-grid">
                                     <a href="screens.html" class="btn btn-primary">Gerenciar Screens</a>
                                 </div>
@@ -228,10 +263,31 @@
                                 <h5><i class="bi bi-list-check me-2"></i>Lista de Screens</h5>
                             </div>
                             <div class="card-body">
-                                <div class="text-center text-muted py-4">
-                                    <i class="bi bi-tv display-1 mb-3 d-block"></i>
-                                    <p>Nenhuma screen configurada</p>
-                                    <a href="screens.html" class="btn btn-primary">Adicionar Screen</a>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <div>
+                                            <strong>Recepção Principal</strong>
+                                            <small class="d-block text-muted">TV-001</small>
+                                        </div>
+                                        <span class="badge bg-success">Online</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <div>
+                                            <strong>Sala de Espera</strong>
+                                            <small class="d-block text-muted">TV-002</small>
+                                        </div>
+                                        <span class="badge bg-success">Online</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <div>
+                                            <strong>Corredor</strong>
+                                            <small class="d-block text-muted">TV-003</small>
+                                        </div>
+                                        <span class="badge bg-danger">Offline</span>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <a href="screens.html" class="btn btn-primary btn-sm">Ver Todas</a>
                                 </div>
                             </div>
                         </div>
@@ -246,10 +302,24 @@
                                 <h5><i class="bi bi-eye me-2"></i>Screen Impressions</h5>
                             </div>
                             <div class="card-body">
-                                <div class="text-center py-5">
-                                    <canvas id="impressionsChart" width="400" height="200"></canvas>
-                                    <p class="text-muted mt-3">Sem dados para exibir</p>
+                                <div class="row text-center mb-3">
+                                    <div class="col-4">
+                                        <h4 class="text-primary mb-0">1,254</h4>
+                                        <small class="text-muted">Hoje</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <h4 class="text-success mb-0">8,945</h4>
+                                        <small class="text-muted">Esta semana</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <h4 class="text-warning mb-0">35,672</h4>
+                                        <small class="text-muted">Este mês</small>
+                                    </div>
                                 </div>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-primary" style="width: 75%"></div>
+                                </div>
+                                <small class="text-muted">75% da meta mensal atingida</small>
                             </div>
                         </div>
                     </div>
@@ -264,14 +334,34 @@
                                         <tr>
                                             <th>Data</th>
                                             <th>Impressões</th>
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td colspan="2" class="text-center text-muted py-4">
-                                                <i class="bi bi-graph-up display-4 d-block mb-2"></i>
-                                                Sem dados disponíveis
-                                            </td>
+                                            <td>Hoje</td>
+                                            <td>1,254</td>
+                                            <td><span class="badge bg-success">+15%</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ontem</td>
+                                            <td>1,089</td>
+                                            <td><span class="badge bg-warning">-5%</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2 dias</td>
+                                            <td>1,456</td>
+                                            <td><span class="badge bg-success">+22%</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>3 dias</td>
+                                            <td>1,198</td>
+                                            <td><span class="badge bg-danger">-8%</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>4 dias</td>
+                                            <td>1,367</td>
+                                            <td><span class="badge bg-success">+12%</span></td>
                                         </tr>
                                     </tbody>
                                 </table>

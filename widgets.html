@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -18,10 +17,11 @@
         }
         .sidebar .nav-link {
             color: rgba(255,255,255,0.8);
-            padding: 12px 20px;
+            padding: 8px 15px;
             border-radius: 8px;
             margin: 2px 8px;
             transition: all 0.3s;
+            font-size: 14px;
         }
         .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
@@ -30,8 +30,8 @@
             transform: translateX(5px);
         }
         .sidebar .nav-link i {
-            width: 20px;
-            margin-right: 10px;
+            width: 18px;
+            margin-right: 8px;
         }
         .main-content {
             background: #f8f9fa;
@@ -48,51 +48,37 @@
         .navbar-brand {
             font-weight: bold;
             color: white !important;
-        }
-        .widget-card {
-            border: 2px solid #dee2e6;
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .widget-card:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
+            font-size: 16px;
         }
         .widget-preview {
-            height: 150px;
-            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            height: 120px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            color: #667eea;
+            margin-bottom: 15px;
+            border: 2px dashed #dee2e6;
         }
-        .widget-preview.clock {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .widget-preview.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            border-color: #667eea;
         }
-        .widget-preview.weather {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            color: white;
-        }
-        .widget-preview.news {
-            background: linear-gradient(135deg, #fa709a, #fee140);
-            color: white;
-        }
-        .widget-preview.social {
-            background: linear-gradient(135deg, #a8edea, #fed6e3);
-            color: #333;
-        }
-        .color-picker {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 2px solid #fff;
+        .widget-card {
             cursor: pointer;
-            margin: 2px;
-            display: inline-block;
+            border: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+        .widget-card:hover {
+            border-color: #667eea;
+        }
+        .modal-dialog {
+            max-width: 90vw;
+            margin: 1.75rem auto;
+        }
+        .modal-lg {
+            max-width: 800px;
         }
         @media (max-width: 768px) {
             .sidebar {
@@ -104,6 +90,10 @@
             }
             .sidebar.show {
                 left: 0;
+            }
+            .modal-dialog {
+                width: 95vw;
+                margin: 0.5rem auto;
             }
         }
     </style>
@@ -194,195 +184,310 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Widgets</h1>
-                    <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
-                        <i class="bi bi-list"></i>
-                    </button>
+                    <div>
+                        <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#createWidgetModal">
+                            <i class="bi bi-plus-circle me-1"></i>Criar Widget
+                        </button>
+                        <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+                            <i class="bi bi-list"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- My Widgets Section -->
+                <!-- Widget Categories -->
                 <div class="row mb-4">
                     <div class="col-12">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5><i class="bi bi-grid me-2"></i>Meus Widgets</h5>
-                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createWidgetModal">
-                                    <i class="bi bi-plus-circle me-1"></i>Criar Widget
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-3 col-sm-6 mb-3">
-                                        <div class="widget-card" onclick="editWidget('clock1')">
-                                            <div class="widget-preview clock">
-                                                <i class="bi bi-clock"></i>
-                                            </div>
-                                            <div class="p-3">
-                                                <h6 class="mb-1">Relógio Digital</h6>
-                                                <small class="text-muted">Atualizado há 5 min</small>
-                                                <div class="mt-2">
-                                                    <button class="btn btn-outline-primary btn-sm me-1" onclick="event.stopPropagation(); editWidget('clock1')">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-danger btn-sm" onclick="event.stopPropagation(); deleteWidget('clock1')">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </div>
+                        <ul class="nav nav-pills">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="pill" href="#myWidgets">Meus Widgets</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="pill" href="#availableWidgets">Widgets Disponíveis</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="pill" href="#templates">Templates</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tab-content">
+                    <!-- My Widgets -->
+                    <div class="tab-pane fade show active" id="myWidgets">
+                        <div class="row">
+                            <!-- Clock Widget -->
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card widget-card h-100">
+                                    <div class="card-body">
+                                        <div class="widget-preview active">
+                                            <div class="text-center">
+                                                <h3 id="currentTime">14:30:25</h3>
+                                                <p class="mb-0">Relógio Digital</p>
                                             </div>
                                         </div>
+                                        <h6>Relógio Digital</h6>
+                                        <p class="text-muted small">Exibe hora atual em tempo real</p>
+                                        <div class="d-flex justify-content-between">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="editWidget('clock')">
+                                                <i class="bi bi-pencil"></i> Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="col-md-3 col-sm-6 mb-3">
-                                        <div class="widget-card" onclick="editWidget('weather1')">
-                                            <div class="widget-preview weather">
-                                                <i class="bi bi-cloud-sun"></i>
+                                </div>
+                            </div>
+
+                            <!-- Weather Widget -->
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card widget-card h-100">
+                                    <div class="card-body">
+                                        <div class="widget-preview active">
+                                            <div class="text-center">
+                                                <i class="bi bi-sun display-4 mb-2"></i>
+                                                <h4>28°C</h4>
+                                                <p class="mb-0">São Paulo</p>
                                             </div>
-                                            <div class="p-3">
-                                                <h6 class="mb-1">Clima Local</h6>
-                                                <small class="text-muted">São Paulo, SP</small>
-                                                <div class="mt-2">
-                                                    <button class="btn btn-outline-primary btn-sm me-1" onclick="event.stopPropagation(); editWidget('weather1')">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-danger btn-sm" onclick="event.stopPropagation(); deleteWidget('weather1')">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </div>
+                                        </div>
+                                        <h6>Clima Atual</h6>
+                                        <p class="text-muted small">Temperatura e condições climáticas</p>
+                                        <div class="d-flex justify-content-between">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="editWidget('weather')">
+                                                <i class="bi bi-pencil"></i> Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- News Widget -->
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card widget-card h-100">
+                                    <div class="card-body">
+                                        <div class="widget-preview active">
+                                            <div class="text-center">
+                                                <i class="bi bi-newspaper display-4 mb-2"></i>
+                                                <p class="mb-0">Últimas Notícias</p>
                                             </div>
+                                        </div>
+                                        <h6>Feed de Notícias</h6>
+                                        <p class="text-muted small">RSS de notícias em tempo real</p>
+                                        <div class="d-flex justify-content-between">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="editWidget('news')">
+                                                <i class="bi bi-pencil"></i> Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Social Media Widget -->
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card widget-card h-100">
+                                    <div class="card-body">
+                                        <div class="widget-preview active">
+                                            <div class="text-center">
+                                                <i class="bi bi-instagram display-4 mb-2"></i>
+                                                <p class="mb-0">@empresa</p>
+                                            </div>
+                                        </div>
+                                        <h6>Feed Instagram</h6>
+                                        <p class="text-muted small">Posts recentes do Instagram</p>
+                                        <div class="d-flex justify-content-between">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="editWidget('instagram')">
+                                                <i class="bi bi-pencil"></i> Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- QR Code Widget -->
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card widget-card h-100">
+                                    <div class="card-body">
+                                        <div class="widget-preview active">
+                                            <div class="text-center">
+                                                <i class="bi bi-qr-code display-4 mb-2"></i>
+                                                <p class="mb-0">QR Code</p>
+                                            </div>
+                                        </div>
+                                        <h6>QR Code</h6>
+                                        <p class="text-muted small">Link para site ou promoção</p>
+                                        <div class="d-flex justify-content-between">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="editWidget('qrcode')">
+                                                <i class="bi bi-pencil"></i> Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Text Ticker Widget -->
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card widget-card h-100">
+                                    <div class="card-body">
+                                        <div class="widget-preview active">
+                                            <div class="text-center">
+                                                <i class="bi bi-type display-4 mb-2"></i>
+                                                <p class="mb-0">Texto Animado</p>
+                                            </div>
+                                        </div>
+                                        <h6>Ticker de Texto</h6>
+                                        <p class="text-muted small">Texto rolante personalizado</p>
+                                        <div class="d-flex justify-content-between">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="editWidget('ticker')">
+                                                <i class="bi bi-pencil"></i> Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Available Widgets Gallery -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><i class="bi bi-collection me-2"></i>Galeria de Widgets</h5>
+                    <!-- Available Widgets -->
+                    <div class="tab-pane fade" id="availableWidgets">
+                        <div class="row">
+                            <!-- YouTube Widget -->
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card widget-card h-100">
+                                    <div class="card-body">
+                                        <div class="widget-preview">
+                                            <div class="text-center">
+                                                <i class="bi bi-youtube display-4 mb-2 text-danger"></i>
+                                                <p class="mb-0">YouTube Player</p>
+                                            </div>
+                                        </div>
+                                        <h6>YouTube Player</h6>
+                                        <p class="text-muted small">Reproduzir vídeos do YouTube</p>
+                                        <button class="btn btn-primary btn-sm w-100" onclick="addWidget('youtube')">
+                                            <i class="bi bi-plus"></i> Adicionar
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-3 col-sm-6 mb-3">
-                                        <div class="widget-card" data-bs-toggle="modal" data-bs-target="#addWidgetModal" data-widget="clock">
-                                            <div class="widget-preview clock">
-                                                <div class="text-center">
-                                                    <i class="bi bi-clock display-4 mb-2"></i>
-                                                    <div>14:30:25</div>
-                                                </div>
-                                            </div>
-                                            <div class="p-3 text-center">
-                                                <h6 class="mb-1">Relógio Digital</h6>
-                                                <small class="text-muted">Hora atual com segundos</small>
-                                                <div class="mt-2">
-                                                    <button class="btn btn-primary btn-sm">
-                                                        <i class="bi bi-plus me-1"></i>Adicionar
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div class="col-md-3 col-sm-6 mb-3">
-                                        <div class="widget-card" data-bs-toggle="modal" data-bs-target="#addWidgetModal" data-widget="weather">
-                                            <div class="widget-preview weather">
-                                                <div class="text-center">
-                                                    <i class="bi bi-cloud-sun display-4 mb-2"></i>
-                                                    <div>25°C</div>
-                                                </div>
-                                            </div>
-                                            <div class="p-3 text-center">
-                                                <h6 class="mb-1">Previsão do Tempo</h6>
-                                                <small class="text-muted">Clima local atualizado</small>
-                                                <div class="mt-2">
-                                                    <button class="btn btn-primary btn-sm">
-                                                        <i class="bi bi-plus me-1"></i>Adicionar
-                                                    </button>
-                                                </div>
+                            <!-- Calendar Widget -->
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card widget-card h-100">
+                                    <div class="card-body">
+                                        <div class="widget-preview">
+                                            <div class="text-center">
+                                                <i class="bi bi-calendar-week display-4 mb-2 text-primary"></i>
+                                                <p class="mb-0">Calendário</p>
                                             </div>
                                         </div>
+                                        <h6>Calendário</h6>
+                                        <p class="text-muted small">Eventos e datas importantes</p>
+                                        <button class="btn btn-primary btn-sm w-100" onclick="addWidget('calendar')">
+                                            <i class="bi bi-plus"></i> Adicionar
+                                        </button>
                                     </div>
+                                </div>
+                            </div>
 
-                                    <div class="col-md-3 col-sm-6 mb-3">
-                                        <div class="widget-card" data-bs-toggle="modal" data-bs-target="#addWidgetModal" data-widget="news">
-                                            <div class="widget-preview news">
-                                                <div class="text-center">
-                                                    <i class="bi bi-newspaper display-4 mb-2"></i>
-                                                    <div>Notícias</div>
-                                                </div>
-                                            </div>
-                                            <div class="p-3 text-center">
-                                                <h6 class="mb-1">Feed de Notícias</h6>
-                                                <small class="text-muted">RSS personalizado</small>
-                                                <div class="mt-2">
-                                                    <button class="btn btn-primary btn-sm">
-                                                        <i class="bi bi-plus me-1"></i>Adicionar
-                                                    </button>
-                                                </div>
+                            <!-- Counter Widget -->
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card widget-card h-100">
+                                    <div class="card-body">
+                                        <div class="widget-preview">
+                                            <div class="text-center">
+                                                <i class="bi bi-stopwatch display-4 mb-2 text-warning"></i>
+                                                <p class="mb-0">Contador</p>
                                             </div>
                                         </div>
+                                        <h6>Contador</h6>
+                                        <p class="text-muted small">Contagem regressiva ou progressiva</p>
+                                        <button class="btn btn-primary btn-sm w-100" onclick="addWidget('counter')">
+                                            <i class="bi bi-plus"></i> Adicionar
+                                        </button>
                                     </div>
+                                </div>
+                            </div>
 
-                                    <div class="col-md-3 col-sm-6 mb-3">
-                                        <div class="widget-card" data-bs-toggle="modal" data-bs-target="#addWidgetModal" data-widget="social">
-                                            <div class="widget-preview social">
-                                                <div class="text-center">
-                                                    <i class="bi bi-share display-4 mb-2"></i>
-                                                    <div>Social</div>
-                                                </div>
-                                            </div>
-                                            <div class="p-3 text-center">
-                                                <h6 class="mb-1">Redes Sociais</h6>
-                                                <small class="text-muted">Instagram, Twitter</small>
-                                                <div class="mt-2">
-                                                    <button class="btn btn-primary btn-sm">
-                                                        <i class="bi bi-plus me-1"></i>Adicionar
-                                                    </button>
-                                                </div>
+                            <!-- Slideshow Widget -->
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card widget-card h-100">
+                                    <div class="card-body">
+                                        <div class="widget-preview">
+                                            <div class="text-center">
+                                                <i class="bi bi-images display-4 mb-2 text-success"></i>
+                                                <p class="mb-0">Slideshow</p>
                                             </div>
                                         </div>
+                                        <h6>Slideshow</h6>
+                                        <p class="text-muted small">Galeria rotativa de imagens</p>
+                                        <button class="btn btn-primary btn-sm w-100" onclick="addWidget('slideshow')">
+                                            <i class="bi bi-plus"></i> Adicionar
+                                        </button>
                                     </div>
+                                </div>
+                            </div>
 
-                                    <div class="col-md-3 col-sm-6 mb-3">
-                                        <div class="widget-card" data-bs-toggle="modal" data-bs-target="#addWidgetModal" data-widget="qr">
-                                            <div class="widget-preview">
-                                                <div class="text-center">
-                                                    <i class="bi bi-qr-code display-4 mb-2"></i>
-                                                    <div>QR Code</div>
-                                                </div>
-                                            </div>
-                                            <div class="p-3 text-center">
-                                                <h6 class="mb-1">QR Code</h6>
-                                                <small class="text-muted">Links personalizados</small>
-                                                <div class="mt-2">
-                                                    <button class="btn btn-primary btn-sm">
-                                                        <i class="bi bi-plus me-1"></i>Adicionar
-                                                    </button>
-                                                </div>
+                            <!-- Stock Widget -->
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card widget-card h-100">
+                                    <div class="card-body">
+                                        <div class="widget-preview">
+                                            <div class="text-center">
+                                                <i class="bi bi-graph-up display-4 mb-2 text-info"></i>
+                                                <p class="mb-0">Ações/Crypto</p>
                                             </div>
                                         </div>
+                                        <h6>Cotações</h6>
+                                        <p class="text-muted small">Preços de ações e criptomoedas</p>
+                                        <button class="btn btn-primary btn-sm w-100" onclick="addWidget('stock')">
+                                            <i class="bi bi-plus"></i> Adicionar
+                                        </button>
                                     </div>
+                                </div>
+                            </div>
 
-                                    <div class="col-md-3 col-sm-6 mb-3">
-                                        <div class="widget-card" data-bs-toggle="modal" data-bs-target="#addWidgetModal" data-widget="text">
-                                            <div class="widget-preview">
-                                                <div class="text-center">
-                                                    <i class="bi bi-textarea-t display-4 mb-2"></i>
-                                                    <div>Texto</div>
-                                                </div>
-                                            </div>
-                                            <div class="p-3 text-center">
-                                                <h6 class="mb-1">Texto Personalizado</h6>
-                                                <small class="text-muted">Mensagens e avisos</small>
-                                                <div class="mt-2">
-                                                    <button class="btn btn-primary btn-sm">
-                                                        <i class="bi bi-plus me-1"></i>Adicionar
-                                                    </button>
-                                                </div>
+                            <!-- Survey Widget -->
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card widget-card h-100">
+                                    <div class="card-body">
+                                        <div class="widget-preview">
+                                            <div class="text-center">
+                                                <i class="bi bi-clipboard-check display-4 mb-2 text-secondary"></i>
+                                                <p class="mb-0">Enquete</p>
                                             </div>
                                         </div>
+                                        <h6>Enquete/Survey</h6>
+                                        <p class="text-muted small">Pesquisas de satisfação</p>
+                                        <button class="btn btn-primary btn-sm w-100" onclick="addWidget('survey')">
+                                            <i class="bi bi-plus"></i> Adicionar
+                                        </button>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Templates -->
+                    <div class="tab-pane fade" id="templates">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Templates de widgets combinados estarão disponíveis em breve!
                                 </div>
                             </div>
                         </div>
@@ -392,64 +497,42 @@
         </div>
     </div>
 
-    <!-- Add Widget Modal -->
-    <div class="modal fade" id="addWidgetModal" tabindex="-1">
-        <div class="modal-dialog">
+    <!-- Create Custom Widget Modal -->
+    <div class="modal fade" id="createWidgetModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Configurar Widget</h5>
+                    <h5 class="modal-title">Criar Widget Personalizado</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="widgetForm">
+                    <form>
                         <div class="mb-3">
                             <label class="form-label">Nome do Widget:</label>
-                            <input type="text" class="form-control" id="widgetName" placeholder="Ex: Relógio Principal">
+                            <input type="text" class="form-control" placeholder="Ex: Promoção Especial">
                         </div>
-                        
-                        <!-- Dynamic content based on widget type -->
-                        <div id="widgetSpecificConfig">
-                            <!-- Will be populated by JavaScript -->
-                        </div>
-
                         <div class="mb-3">
-                            <label class="form-label">Posição na Tela:</label>
+                            <label class="form-label">Tipo de Widget:</label>
                             <select class="form-select">
-                                <option>Canto superior direito</option>
-                                <option>Canto superior esquerdo</option>
-                                <option>Canto inferior direito</option>
-                                <option>Canto inferior esquerdo</option>
-                                <option>Centro da tela</option>
-                                <option>Barra inferior</option>
-                                <option>Barra superior</option>
+                                <option>Texto Estático</option>
+                                <option>Imagem</option>
+                                <option>HTML Personalizado</option>
+                                <option>Feed RSS</option>
+                                <option>API Externa</option>
                             </select>
                         </div>
-
                         <div class="mb-3">
-                            <label class="form-label">Cores:</label>
-                            <div class="d-flex flex-wrap">
-                                <span class="color-picker" style="background: #667eea" onclick="selectColor('#667eea')"></span>
-                                <span class="color-picker" style="background: #764ba2" onclick="selectColor('#764ba2')"></span>
-                                <span class="color-picker" style="background: #fa709a" onclick="selectColor('#fa709a')"></span>
-                                <span class="color-picker" style="background: #4facfe" onclick="selectColor('#4facfe')"></span>
-                                <span class="color-picker" style="background: #43e97b" onclick="selectColor('#43e97b')"></span>
-                                <span class="color-picker" style="background: #ffffff; border-color: #ddd" onclick="selectColor('#ffffff')"></span>
-                                <span class="color-picker" style="background: #000000" onclick="selectColor('#000000')"></span>
-                            </div>
+                            <label class="form-label">Conteúdo:</label>
+                            <textarea class="form-control" rows="5" placeholder="Digite o conteúdo do widget..."></textarea>
                         </div>
-
                         <div class="row">
-                            <div class="col-6">
-                                <label class="form-label">Opacidade:</label>
-                                <input type="range" class="form-range" min="0" max="100" value="100">
+                            <div class="col-md-6">
+                                <label class="form-label">Largura (px):</label>
+                                <input type="number" class="form-control" value="300">
                             </div>
-                            <div class="col-6">
-                                <label class="form-label">Tamanho:</label>
-                                <select class="form-select">
-                                    <option>Pequeno</option>
-                                    <option selected>Médio</option>
-                                    <option>Grande</option>
-                                </select>
+                            <div class="col-md-6">
+                                <label class="form-label">Altura (px):</label>
+                                <input type="number" class="form-control" value="200">
                             </div>
                         </div>
                     </form>
@@ -462,105 +545,118 @@
         </div>
     </div>
 
+    <!-- Edit Widget Modal -->
+    <div class="modal fade" id="editWidgetModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Widget: <span id="widgetName">Relógio Digital</span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="widgetEditContent">
+                        <!-- Clock Widget Edit Form -->
+                        <div id="clockEditForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Configurações Visuais</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">Formato de Hora:</label>
+                                        <select class="form-select">
+                                            <option>24 horas (14:30:25)</option>
+                                            <option>12 horas (2:30:25 PM)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Tamanho da Fonte:</label>
+                                        <select class="form-select">
+                                            <option>Pequeno</option>
+                                            <option selected>Médio</option>
+                                            <option>Grande</option>
+                                            <option>Extra Grande</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Cor do Texto:</label>
+                                        <input type="color" class="form-control form-control-color" value="#ffffff">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Cor de Fundo:</label>
+                                        <input type="color" class="form-control form-control-color" value="#667eea">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Configurações Avançadas</h6>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="showSeconds">
+                                        <label class="form-check-label" for="showSeconds">
+                                            Mostrar segundos
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="showDate">
+                                        <label class="form-check-label" for="showDate">
+                                            Mostrar data
+                                        </label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Fuso Horário:</label>
+                                        <select class="form-select">
+                                            <option>São Paulo (GMT-3)</option>
+                                            <option>Brasília (GMT-3)</option>
+                                            <option>UTC (GMT+0)</option>
+                                            <option>Nova York (GMT-5)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Duração de Exibição (segundos):</label>
+                                        <input type="number" class="form-control" value="10" min="5" max="60">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let selectedColor = '#667eea';
+        // Update clock every second
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('pt-BR');
+            document.getElementById('currentTime').textContent = timeString;
+        }
+        
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial call
 
-        function selectColor(color) {
-            selectedColor = color;
-            document.querySelectorAll('.color-picker').forEach(picker => {
-                picker.style.border = '2px solid #fff';
-            });
-            event.target.style.border = '2px solid #333';
+        function editWidget(type) {
+            const modal = new bootstrap.Modal(document.getElementById('editWidgetModal'));
+            document.getElementById('widgetName').textContent = getWidgetName(type);
+            modal.show();
         }
 
-        function editWidget(widgetId) {
-            alert('Editar widget: ' + widgetId);
+        function addWidget(type) {
+            alert(`Widget ${type} será adicionado aos seus widgets!`);
         }
 
-        function deleteWidget(widgetId) {
-            if (confirm('Tem certeza que deseja excluir este widget?')) {
-                alert('Widget excluído: ' + widgetId);
-            }
-        }
-
-        // Handle widget type selection
-        document.addEventListener('DOMContentLoaded', function() {
-            const addWidgetModal = document.getElementById('addWidgetModal');
-            const widgetSpecificConfig = document.getElementById('widgetSpecificConfig');
-            
-            document.querySelectorAll('[data-widget]').forEach(card => {
-                card.addEventListener('click', function() {
-                    const widgetType = this.dataset.widget;
-                    populateWidgetConfig(widgetType);
-                });
-            });
-        });
-
-        function populateWidgetConfig(type) {
-            const config = document.getElementById('widgetSpecificConfig');
-            
-            switch(type) {
-                case 'clock':
-                    config.innerHTML = `
-                        <div class="mb-3">
-                            <label class="form-label">Formato:</label>
-                            <select class="form-select">
-                                <option>24 horas (14:30:25)</option>
-                                <option>12 horas (2:30:25 PM)</option>
-                                <option>Apenas hora (14:30)</option>
-                            </select>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="showDate">
-                            <label class="form-check-label" for="showDate">Mostrar data</label>
-                        </div>
-                    `;
-                    break;
-                case 'weather':
-                    config.innerHTML = `
-                        <div class="mb-3">
-                            <label class="form-label">Cidade:</label>
-                            <input type="text" class="form-control" placeholder="São Paulo, SP">
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="showForecast">
-                            <label class="form-check-label" for="showForecast">Mostrar previsão de 3 dias</label>
-                        </div>
-                    `;
-                    break;
-                case 'news':
-                    config.innerHTML = `
-                        <div class="mb-3">
-                            <label class="form-label">Fonte RSS:</label>
-                            <input type="url" class="form-control" placeholder="https://example.com/rss">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Número de notícias:</label>
-                            <input type="number" class="form-control" value="5" min="1" max="10">
-                        </div>
-                    `;
-                    break;
-                case 'text':
-                    config.innerHTML = `
-                        <div class="mb-3">
-                            <label class="form-label">Texto:</label>
-                            <textarea class="form-control" rows="3" placeholder="Digite seu texto personalizado"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Fonte:</label>
-                            <select class="form-select">
-                                <option>Arial</option>
-                                <option>Helvetica</option>
-                                <option>Times New Roman</option>
-                                <option>Georgia</option>
-                            </select>
-                        </div>
-                    `;
-                    break;
-                default:
-                    config.innerHTML = '<p class="text-muted">Configurações específicas para este widget.</p>';
-            }
+        function getWidgetName(type) {
+            const names = {
+                'clock': 'Relógio Digital',
+                'weather': 'Clima Atual',
+                'news': 'Feed de Notícias',
+                'instagram': 'Feed Instagram',
+                'qrcode': 'QR Code',
+                'ticker': 'Ticker de Texto'
+            };
+            return names[type] || 'Widget';
         }
     </script>
 </body>

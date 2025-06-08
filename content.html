@@ -18,10 +18,11 @@
         }
         .sidebar .nav-link {
             color: rgba(255,255,255,0.8);
-            padding: 12px 20px;
+            padding: 8px 15px;
             border-radius: 8px;
             margin: 2px 8px;
             transition: all 0.3s;
+            font-size: 14px;
         }
         .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
@@ -30,8 +31,8 @@
             transform: translateX(5px);
         }
         .sidebar .nav-link i {
-            width: 20px;
-            margin-right: 10px;
+            width: 18px;
+            margin-right: 8px;
         }
         .main-content {
             background: #f8f9fa;
@@ -48,6 +49,7 @@
         .navbar-brand {
             font-weight: bold;
             color: white !important;
+            font-size: 16px;
         }
         .upload-area {
             border: 2px dashed #dee2e6;
@@ -66,12 +68,14 @@
             border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
+            height: 220px;
         }
         .content-item input[type="checkbox"] {
             position: absolute;
             top: 10px;
             left: 10px;
             z-index: 2;
+            transform: scale(1.2);
         }
         .content-item .overlay {
             position: absolute;
@@ -82,6 +86,7 @@
             background: rgba(0,0,0,0.7);
             color: white;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             opacity: 0;
@@ -90,6 +95,18 @@
         .content-item:hover .overlay {
             opacity: 1;
         }
+        .content-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .modal-dialog {
+            max-width: 90vw;
+            width: 500px;
+            margin: 1.75rem auto;
+        }
+        
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -100,6 +117,17 @@
             }
             .sidebar.show {
                 left: 0;
+            }
+            .sidebar .nav-link {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+            .content-item {
+                height: 180px;
+            }
+            .modal-dialog {
+                width: 95vw;
+                margin: 0.5rem auto;
             }
         }
     </style>
@@ -242,8 +270,14 @@
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5><i class="bi bi-folder-fill me-2"></i>Meus Arquivos</h5>
                                 <div>
+                                    <select class="form-select form-select-sm d-inline-block w-auto me-2">
+                                        <option>Ordenar por data</option>
+                                        <option>Ordenar por nome</option>
+                                        <option>Ordenar por tamanho</option>
+                                        <option>Ordenar por tipo</option>
+                                    </select>
                                     <button class="btn btn-outline-danger btn-sm me-2" id="deleteSelected" disabled>
-                                        <i class="bi bi-trash me-1"></i>Apagar Selecionados
+                                        <i class="bi bi-trash me-1"></i>Apagar
                                     </button>
                                     <button class="btn btn-primary btn-sm" id="addToPlaylist" disabled>
                                         <i class="bi bi-plus-circle me-1"></i>Adicionar à Playlist
@@ -254,84 +288,153 @@
                                 <!-- Filter tabs -->
                                 <ul class="nav nav-pills mb-3">
                                     <li class="nav-item">
-                                        <a class="nav-link active" data-bs-toggle="pill" href="#all">Todos</a>
+                                        <a class="nav-link active" data-bs-toggle="pill" href="#all">Todos (12)</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-bs-toggle="pill" href="#videos">Vídeos</a>
+                                        <a class="nav-link" data-bs-toggle="pill" href="#videos">Vídeos (8)</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" data-bs-toggle="pill" href="#images">Imagens</a>
+                                        <a class="nav-link" data-bs-toggle="pill" href="#images">Imagens (4)</a>
                                     </li>
                                 </ul>
 
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="all">
                                         <div class="row" id="contentGrid">
-                                            <!-- Sample Content Items -->
-                                            <div class="col-md-3 col-sm-6 mb-3">
+                                            <!-- Content Items with Google Images -->
+                                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                                                 <div class="content-item">
                                                     <input type="checkbox" class="form-check-input content-checkbox">
-                                                    <img src="https://via.placeholder.com/300x200/667eea/ffffff?text=Video1.mp4" class="img-fluid" alt="Video">
+                                                    <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400" alt="Video Corporativo">
                                                     <div class="overlay">
-                                                        <div class="text-center">
-                                                            <i class="bi bi-play-circle display-4 mb-2"></i>
-                                                            <p class="mb-0">video1.mp4</p>
-                                                            <small>2.5 MB • 30s</small>
+                                                        <i class="bi bi-play-circle display-4 mb-2"></i>
+                                                        <p class="mb-1"><strong>video_corporativo.mp4</strong></p>
+                                                        <small>2.5 MB • 45s</small>
+                                                        <div class="mt-2">
+                                                            <button class="btn btn-light btn-sm me-1" onclick="previewContent('video', 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800')">
+                                                                <i class="bi bi-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-danger btn-sm">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3 col-sm-6 mb-3">
+                                            
+                                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                                                 <div class="content-item">
                                                     <input type="checkbox" class="form-check-input content-checkbox">
-                                                    <img src="https://via.placeholder.com/300x200/764ba2/ffffff?text=Imagem1.jpg" class="img-fluid" alt="Image">
+                                                    <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400" alt="Apresentação">
                                                     <div class="overlay">
-                                                        <div class="text-center">
-                                                            <i class="bi bi-image display-4 mb-2"></i>
-                                                            <p class="mb-0">imagem1.jpg</p>
-                                                            <small>1.2 MB • 1920x1080</small>
+                                                        <i class="bi bi-image display-4 mb-2"></i>
+                                                        <p class="mb-1"><strong>apresentacao.jpg</strong></p>
+                                                        <small>1.2 MB • 1920x1080</small>
+                                                        <div class="mt-2">
+                                                            <button class="btn btn-light btn-sm me-1" onclick="previewContent('image', 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800')">
+                                                                <i class="bi bi-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-danger btn-sm">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3 col-sm-6 mb-3">
+                                            
+                                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                                                 <div class="content-item">
                                                     <input type="checkbox" class="form-check-input content-checkbox">
-                                                    <img src="https://via.placeholder.com/300x200/28a745/ffffff?text=Video2.mp4" class="img-fluid" alt="Video">
+                                                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400" alt="Dashboard Analytics">
                                                     <div class="overlay">
-                                                        <div class="text-center">
-                                                            <i class="bi bi-play-circle display-4 mb-2"></i>
-                                                            <p class="mb-0">video2.mp4</p>
-                                                            <small>5.1 MB • 45s</small>
+                                                        <i class="bi bi-play-circle display-4 mb-2"></i>
+                                                        <p class="mb-1"><strong>analytics_demo.mp4</strong></p>
+                                                        <small>5.1 MB • 1:30</small>
+                                                        <div class="mt-2">
+                                                            <button class="btn btn-light btn-sm me-1" onclick="previewContent('video', 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800')">
+                                                                <i class="bi bi-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-danger btn-sm">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3 col-sm-6 mb-3">
+                                            
+                                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                                                 <div class="content-item">
                                                     <input type="checkbox" class="form-check-input content-checkbox">
-                                                    <img src="https://via.placeholder.com/300x200/dc3545/ffffff?text=Imagem2.png" class="img-fluid" alt="Image">
+                                                    <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=400" alt="Produto">
                                                     <div class="overlay">
-                                                        <div class="text-center">
-                                                            <i class="bi bi-image display-4 mb-2"></i>
-                                                            <p class="mb-0">imagem2.png</p>
-                                                            <small>800 KB • 1280x720</small>
+                                                        <i class="bi bi-image display-4 mb-2"></i>
+                                                        <p class="mb-1"><strong>produto_destaque.png</strong></p>
+                                                        <small>800 KB • 1280x720</small>
+                                                        <div class="mt-2">
+                                                            <button class="btn btn-light btn-sm me-1" onclick="previewContent('image', 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800')">
+                                                                <i class="bi bi-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-danger btn-sm">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                                <div class="content-item">
+                                                    <input type="checkbox" class="form-check-input content-checkbox">
+                                                    <img src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400" alt="Tecnologia">
+                                                    <div class="overlay">
+                                                        <i class="bi bi-play-circle display-4 mb-2"></i>
+                                                        <p class="mb-1"><strong>tech_intro.mp4</strong></p>
+                                                        <small>3.2 MB • 20s</small>
+                                                        <div class="mt-2">
+                                                            <button class="btn btn-light btn-sm me-1" onclick="previewContent('video', 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800')">
+                                                                <i class="bi bi-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-danger btn-sm">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                                <div class="content-item">
+                                                    <input type="checkbox" class="form-check-input content-checkbox">
+                                                    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400" alt="Equipe">
+                                                    <div class="overlay">
+                                                        <i class="bi bi-image display-4 mb-2"></i>
+                                                        <p class="mb-1"><strong>nossa_equipe.jpg</strong></p>
+                                                        <small>1.5 MB • 1920x1080</small>
+                                                        <div class="mt-2">
+                                                            <button class="btn btn-light btn-sm me-1" onclick="previewContent('image', 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800')">
+                                                                <i class="bi bi-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-danger btn-sm">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    
                                     <div class="tab-pane fade" id="videos">
                                         <div class="text-center py-5">
                                             <i class="bi bi-play-circle display-1 text-muted mb-3"></i>
-                                            <p class="text-muted">Filtrar apenas vídeos</p>
+                                            <p class="text-muted">Filtros de vídeo aplicados</p>
                                         </div>
                                     </div>
+                                    
                                     <div class="tab-pane fade" id="images">
                                         <div class="text-center py-5">
                                             <i class="bi bi-image display-1 text-muted mb-3"></i>
-                                            <p class="text-muted">Filtrar apenas imagens</p>
+                                            <p class="text-muted">Filtros de imagem aplicados</p>
                                         </div>
                                     </div>
                                 </div>
@@ -340,6 +443,21 @@
                     </div>
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Preview do Conteúdo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="previewContent"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -353,12 +471,37 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Selecionar Playlist:</label>
-                        <select class="form-select">
-                            <option>Playlist Principal</option>
-                            <option>Promoções</option>
-                            <option>Institucional</option>
-                        </select>
+                        <label class="form-label">Selecionar Playlists:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="playlist1">
+                            <label class="form-check-label" for="playlist1">
+                                Playlist Principal
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="playlist2">
+                            <label class="form-check-label" for="playlist2">
+                                Promoções Janeiro
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="playlist3">
+                            <label class="form-check-label" for="playlist3">
+                                Institucional
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="playlist4">
+                            <label class="form-check-label" for="playlist4">
+                                Produtos e Serviços
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="playlist5">
+                            <label class="form-check-label" for="playlist5">
+                                Eventos e Novidades
+                            </label>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Ou criar nova playlist:</label>
@@ -405,6 +548,25 @@
                 }
             });
         });
+
+        // Preview function
+        function previewContent(type, src) {
+            const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+            const content = document.getElementById('previewContent');
+            
+            if (type === 'image') {
+                content.innerHTML = `<img src="${src}" class="img-fluid" alt="Preview">`;
+            } else {
+                content.innerHTML = `
+                    <video controls class="w-100" style="max-height: 400px;">
+                        <source src="${src}" type="video/mp4">
+                        Seu navegador não suporta vídeos.
+                    </video>
+                `;
+            }
+            
+            modal.show();
+        }
     </script>
 </body>
 </html>

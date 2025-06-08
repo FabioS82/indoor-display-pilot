@@ -18,10 +18,11 @@
         }
         .sidebar .nav-link {
             color: rgba(255,255,255,0.8);
-            padding: 12px 20px;
+            padding: 8px 15px;
             border-radius: 8px;
             margin: 2px 8px;
             transition: all 0.3s;
+            font-size: 14px;
         }
         .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
@@ -30,8 +31,8 @@
             transform: translateX(5px);
         }
         .sidebar .nav-link i {
-            width: 20px;
-            margin-right: 10px;
+            width: 18px;
+            margin-right: 8px;
         }
         .main-content {
             background: #f8f9fa;
@@ -48,6 +49,7 @@
         .navbar-brand {
             font-weight: bold;
             color: white !important;
+            font-size: 16px;
         }
         .upload-area {
             border: 2px dashed #dee2e6;
@@ -64,38 +66,37 @@
         .music-item {
             border-bottom: 1px solid #dee2e6;
             padding: 15px 0;
-            transition: background 0.3s;
+            transition: background-color 0.3s;
         }
         .music-item:hover {
-            background: rgba(102, 126, 234, 0.05);
+            background-color: rgba(102, 126, 234, 0.05);
         }
         .music-item:last-child {
             border-bottom: none;
         }
         .play-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.3s;
+            background: #667eea;
+            color: white;
+            border: none;
+            transition: background-color 0.3s;
         }
         .play-btn:hover {
-            transform: scale(1.1);
-        }
-        .waveform {
-            height: 40px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #5a6fd8;
             color: white;
-            font-size: 12px;
+        }
+        .playing {
+            background: #28a745 !important;
+        }
+        .modal-dialog {
+            max-width: 90vw;
+            width: 500px;
+            margin: 1.75rem auto;
         }
         @media (max-width: 768px) {
             .sidebar {
@@ -107,6 +108,10 @@
             }
             .sidebar.show {
                 left: 0;
+            }
+            .modal-dialog {
+                width: 95vw;
+                margin: 0.5rem auto;
             }
         }
     </style>
@@ -196,7 +201,7 @@
             <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Gerenciar Músicas</h1>
+                    <h1 class="h2">Biblioteca de Músicas</h1>
                     <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
                         <i class="bi bi-list"></i>
                     </button>
@@ -207,12 +212,11 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-                                <div class="upload-area" onclick="document.getElementById('musicInput').click()">
-                                    <i class="bi bi-music-note display-1 text-muted mb-3"></i>
-                                    <h5>Adicionar Arquivos de Áudio</h5>
-                                    <p class="text-muted">Clique para fazer upload ou arraste arquivos aqui</p>
-                                    <p class="small text-muted">Formatos aceitos: MP3, WAV, M4A (máx. 20MB cada)</p>
-                                    <input type="file" id="musicInput" multiple accept="audio/*" style="display: none;">
+                                <div class="upload-area" onclick="document.getElementById('audioFileInput').click()">
+                                    <i class="bi bi-music-note-beamed display-1 text-muted mb-3"></i>
+                                    <h5>Clique para fazer upload de músicas</h5>
+                                    <p class="text-muted">Formatos aceitos: MP3, WAV, OGG (máx. 50MB cada)</p>
+                                    <input type="file" id="audioFileInput" multiple accept="audio/*" style="display: none;">
                                 </div>
                             </div>
                         </div>
@@ -224,177 +228,190 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5><i class="bi bi-music-note-list me-2"></i>Biblioteca de Músicas</h5>
+                                <h5><i class="bi bi-music-note-list me-2"></i>Minhas Músicas</h5>
                                 <div>
-                                    <input type="text" class="form-control form-control-sm d-inline-block w-auto me-2" placeholder="Buscar música...">
-                                    <button class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-search"></i>
+                                    <select class="form-select form-select-sm d-inline-block w-auto me-2">
+                                        <option>Ordenar por nome</option>
+                                        <option>Ordenar por data</option>
+                                        <option>Ordenar por duração</option>
+                                        <option>Ordenar por artista</option>
+                                    </select>
+                                    <button class="btn btn-outline-danger btn-sm" id="deleteSelected" disabled>
+                                        <i class="bi bi-trash me-1"></i>Apagar Selecionadas
                                     </button>
                                 </div>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body p-0">
                                 <!-- Music Items -->
-                                <div class="music-item">
+                                <div class="music-item px-3">
                                     <div class="row align-items-center">
-                                        <div class="col-auto">
-                                            <button class="play-btn" onclick="togglePlay(this)">
+                                        <div class="col-md-1">
+                                            <input type="checkbox" class="form-check-input music-checkbox">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button class="play-btn" onclick="togglePlay(this, 'ambient1')">
                                                 <i class="bi bi-play-fill"></i>
                                             </button>
                                         </div>
-                                        <div class="col">
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <h6 class="mb-1">Música Ambiente 1.mp3</h6>
-                                                    <small class="text-muted">Instrumental</small>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <small class="text-muted">3:42</small>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <small class="text-muted">Adicionada em 15/01/2024</small>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="waveform">
-                                                        ♪ ♫ ♪ ♫ ♪
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="col-md-4">
+                                            <strong>Ambiente Corporativo</strong>
+                                            <div class="text-muted small">Música instrumental</div>
                                         </div>
-                                        <div class="col-auto">
-                                            <div class="dropdown">
-                                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                                                    <i class="bi bi-three-dots"></i>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="#"><i class="bi bi-download me-2"></i>Download</a></li>
-                                                    <li><a class="dropdown-item" href="#"><i class="bi bi-pencil me-2"></i>Renomear</a></li>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Excluir</a></li>
-                                                </ul>
-                                            </div>
+                                        <div class="col-md-2 text-muted">
+                                            <i class="bi bi-clock me-1"></i>3:45
+                                        </div>
+                                        <div class="col-md-2 text-muted small">
+                                            Adicionada em 15/01/2024
+                                        </div>
+                                        <div class="col-md-2 text-end">
+                                            <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#editMusicModal">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                     </div>
+                                    <audio id="ambient1" preload="none">
+                                        <source src="https://www.soundjay.com/misc/sounds/magical_1.mp3" type="audio/mpeg">
+                                    </audio>
                                 </div>
 
-                                <div class="music-item">
+                                <div class="music-item px-3">
                                     <div class="row align-items-center">
-                                        <div class="col-auto">
-                                            <button class="play-btn" onclick="togglePlay(this)">
+                                        <div class="col-md-1">
+                                            <input type="checkbox" class="form-check-input music-checkbox">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button class="play-btn" onclick="togglePlay(this, 'jazz1')">
                                                 <i class="bi bi-play-fill"></i>
                                             </button>
                                         </div>
-                                        <div class="col">
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <h6 class="mb-1">Jazz Suave.wav</h6>
-                                                    <small class="text-muted">Jazz</small>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <small class="text-muted">5:18</small>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <small class="text-muted">Adicionada em 12/01/2024</small>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="waveform">
-                                                        ♫ ♪ ♫ ♪ ♫
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="col-md-4">
+                                            <strong>Jazz Lounge</strong>
+                                            <div class="text-muted small">Música de ambiente</div>
                                         </div>
-                                        <div class="col-auto">
-                                            <div class="dropdown">
-                                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                                                    <i class="bi bi-three-dots"></i>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="#"><i class="bi bi-download me-2"></i>Download</a></li>
-                                                    <li><a class="dropdown-item" href="#"><i class="bi bi-pencil me-2"></i>Renomear</a></li>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Excluir</a></li>
-                                                </ul>
-                                            </div>
+                                        <div class="col-md-2 text-muted">
+                                            <i class="bi bi-clock me-1"></i>4:12
+                                        </div>
+                                        <div class="col-md-2 text-muted small">
+                                            Adicionada em 12/01/2024
+                                        </div>
+                                        <div class="col-md-2 text-end">
+                                            <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#editMusicModal">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                     </div>
+                                    <audio id="jazz1" preload="none">
+                                        <source src="https://www.soundjay.com/misc/sounds/magical_2.mp3" type="audio/mpeg">
+                                    </audio>
                                 </div>
 
-                                <div class="music-item">
+                                <div class="music-item px-3">
                                     <div class="row align-items-center">
-                                        <div class="col-auto">
-                                            <button class="play-btn" onclick="togglePlay(this)">
+                                        <div class="col-md-1">
+                                            <input type="checkbox" class="form-check-input music-checkbox">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button class="play-btn" onclick="togglePlay(this, 'instrumental1')">
                                                 <i class="bi bi-play-fill"></i>
                                             </button>
                                         </div>
-                                        <div class="col">
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <h6 class="mb-1">Loja Background.m4a</h6>
-                                                    <small class="text-muted">Comercial</small>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <small class="text-muted">2:55</small>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <small class="text-muted">Adicionada em 08/01/2024</small>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="waveform">
-                                                        ♪ ♫ ♪ ♫ ♪
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="col-md-4">
+                                            <strong>Instrumental Suave</strong>
+                                            <div class="text-muted small">Piano e cordas</div>
                                         </div>
-                                        <div class="col-auto">
-                                            <div class="dropdown">
-                                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                                                    <i class="bi bi-three-dots"></i>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="#"><i class="bi bi-download me-2"></i>Download</a></li>
-                                                    <li><a class="dropdown-item" href="#"><i class="bi bi-pencil me-2"></i>Renomear</a></li>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>Excluir</a></li>
-                                                </ul>
-                                            </div>
+                                        <div class="col-md-2 text-muted">
+                                            <i class="bi bi-clock me-1"></i>2:58
+                                        </div>
+                                        <div class="col-md-2 text-muted small">
+                                            Adicionada em 10/01/2024
+                                        </div>
+                                        <div class="col-md-2 text-end">
+                                            <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#editMusicModal">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                     </div>
+                                    <audio id="instrumental1" preload="none">
+                                        <source src="https://www.soundjay.com/misc/sounds/magical_3.mp3" type="audio/mpeg">
+                                    </audio>
                                 </div>
 
-                                <!-- Empty state for when no music -->
-                                <div class="text-center py-5 d-none" id="emptyState">
-                                    <i class="bi bi-music-note display-1 text-muted mb-3"></i>
-                                    <h5 class="text-muted">Nenhuma música encontrada</h5>
-                                    <p class="text-muted">Adicione arquivos de áudio para começar</p>
+                                <div class="music-item px-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-1">
+                                            <input type="checkbox" class="form-check-input music-checkbox">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button class="play-btn" onclick="togglePlay(this, 'upbeat1')">
+                                                <i class="bi bi-play-fill"></i>
+                                            </button>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Upbeat Commercial</strong>
+                                            <div class="text-muted small">Música energética</div>
+                                        </div>
+                                        <div class="col-md-2 text-muted">
+                                            <i class="bi bi-clock me-1"></i>1:30
+                                        </div>
+                                        <div class="col-md-2 text-muted small">
+                                            Adicionada em 08/01/2024
+                                        </div>
+                                        <div class="col-md-2 text-end">
+                                            <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#editMusicModal">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <audio id="upbeat1" preload="none">
+                                        <source src="https://www.soundjay.com/misc/sounds/magical_4.mp3" type="audio/mpeg">
+                                    </audio>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Audio Controls (when playing) -->
-                <div class="position-fixed bottom-0 start-0 end-0 bg-white border-top p-3 d-none" id="audioPlayer">
-                    <div class="container-fluid">
-                        <div class="row align-items-center">
-                            <div class="col-auto">
-                                <button class="btn btn-primary" id="playerPlayPause">
-                                    <i class="bi bi-pause-fill"></i>
-                                </button>
-                            </div>
-                            <div class="col">
-                                <div class="d-flex align-items-center">
-                                    <strong id="currentTrack">Música Ambiente 1.mp3</strong>
-                                    <span class="ms-auto">
-                                        <span id="currentTime">1:23</span> / <span id="totalTime">3:42</span>
-                                    </span>
+                                <div class="music-item px-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-1">
+                                            <input type="checkbox" class="form-check-input music-checkbox">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button class="play-btn" onclick="togglePlay(this, 'classical1')">
+                                                <i class="bi bi-play-fill"></i>
+                                            </button>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Clássico Moderno</strong>
+                                            <div class="text-muted small">Orquestra sinfônica</div>
+                                        </div>
+                                        <div class="col-md-2 text-muted">
+                                            <i class="bi bi-clock me-1"></i>5:23
+                                        </div>
+                                        <div class="col-md-2 text-muted small">
+                                            Adicionada em 05/01/2024
+                                        </div>
+                                        <div class="col-md-2 text-end">
+                                            <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#editMusicModal">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <audio id="classical1" preload="none">
+                                        <source src="https://www.soundjay.com/misc/sounds/magical_5.mp3" type="audio/mpeg">
+                                    </audio>
                                 </div>
-                                <div class="progress mt-1" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 35%"></div>
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <button class="btn btn-outline-secondary btn-sm" onclick="closePlayer()">
-                                    <i class="bi bi-x"></i>
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -403,44 +420,122 @@
         </div>
     </div>
 
+    <!-- Edit Music Modal -->
+    <div class="modal fade" id="editMusicModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Música</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Título:</label>
+                            <input type="text" class="form-control" value="Ambiente Corporativo">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Artista:</label>
+                            <input type="text" class="form-control" value="Música instrumental">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Categoria:</label>
+                            <select class="form-select">
+                                <option>Ambiente</option>
+                                <option>Jazz</option>
+                                <option>Instrumental</option>
+                                <option>Comercial</option>
+                                <option>Clássica</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Volume Padrão (%):</label>
+                            <input type="range" class="form-range" min="0" max="100" value="70">
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="fadeInOut">
+                            <label class="form-check-label" for="fadeInOut">
+                                Aplicar fade in/out
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let currentPlaying = null;
 
-        function togglePlay(button) {
-            const audioPlayer = document.getElementById('audioPlayer');
+        function togglePlay(button, audioId) {
+            const audio = document.getElementById(audioId);
             const icon = button.querySelector('i');
             
-            // Stop current playing if different
-            if (currentPlaying && currentPlaying !== button) {
-                currentPlaying.querySelector('i').className = 'bi bi-play-fill';
+            // Stop any currently playing audio
+            if (currentPlaying && currentPlaying !== audio) {
+                currentPlaying.pause();
+                currentPlaying.currentTime = 0;
+                // Reset previous button
+                document.querySelectorAll('.play-btn').forEach(btn => {
+                    btn.classList.remove('playing');
+                    btn.querySelector('i').className = 'bi bi-play-fill';
+                });
             }
-            
-            if (icon.classList.contains('bi-play-fill')) {
+
+            if (audio.paused) {
+                audio.play().catch(e => {
+                    console.log('Erro ao reproduzir áudio:', e);
+                    // Simular reprodução visual
+                    button.classList.add('playing');
+                    icon.className = 'bi bi-pause-fill';
+                    setTimeout(() => {
+                        button.classList.remove('playing');
+                        icon.className = 'bi bi-play-fill';
+                    }, 3000);
+                });
+                button.classList.add('playing');
                 icon.className = 'bi bi-pause-fill';
-                currentPlaying = button;
-                audioPlayer.classList.remove('d-none');
+                currentPlaying = audio;
             } else {
+                audio.pause();
+                audio.currentTime = 0;
+                button.classList.remove('playing');
                 icon.className = 'bi bi-play-fill';
                 currentPlaying = null;
-                audioPlayer.classList.add('d-none');
             }
-        }
 
-        function closePlayer() {
-            document.getElementById('audioPlayer').classList.add('d-none');
-            if (currentPlaying) {
-                currentPlaying.querySelector('i').className = 'bi bi-play-fill';
+            // Handle audio end event
+            audio.addEventListener('ended', function() {
+                button.classList.remove('playing');
+                icon.className = 'bi bi-play-fill';
                 currentPlaying = null;
-            }
+            });
         }
 
-        // File upload simulation
-        document.getElementById('musicInput').addEventListener('change', function(e) {
-            const files = e.target.files;
-            if (files.length > 0) {
-                alert(`${files.length} arquivo(s) de áudio selecionado(s) para upload.`);
-            }
+        // Handle checkbox selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.music-checkbox');
+            const deleteBtn = document.getElementById('deleteSelected');
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const checkedBoxes = document.querySelectorAll('.music-checkbox:checked');
+                    deleteBtn.disabled = checkedBoxes.length === 0;
+                });
+            });
+
+            // File upload simulation
+            document.getElementById('audioFileInput').addEventListener('change', function(e) {
+                const files = e.target.files;
+                if (files.length > 0) {
+                    alert(`${files.length} arquivo(s) de áudio selecionado(s) para upload.`);
+                }
+            });
         });
     </script>
 </body>
