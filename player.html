@@ -1,0 +1,454 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player - Digital Signage</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .player-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .content-display {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        .content-display.fade-out {
+            opacity: 0;
+        }
+        
+        .content-display.fade-in {
+            opacity: 1;
+        }
+        
+        .url-content {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .controls-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .player-container:hover .controls-overlay {
+            opacity: 1;
+        }
+        
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: #007bff;
+            transition: width 0.1s linear;
+            z-index: 1000;
+        }
+        
+        .playlist-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .player-container:hover .playlist-info {
+            opacity: 1;
+        }
+        
+        .audio-controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .player-container:hover .audio-controls {
+            opacity: 1;
+        }
+        
+        .emergency-mode {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #dc3545;
+            color: white;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            font-size: 3rem;
+            text-align: center;
+        }
+        
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1500;
+        }
+    </style>
+</head>
+<body>
+    <div class="player-container" id="playerContainer">
+        <!-- Controles -->
+        <div class="controls-overlay">
+            <div class="d-flex align-items-center mb-2">
+                <button class="btn btn-sm btn-light me-2" onclick="togglePlayback()">
+                    <i class="bi bi-pause-fill" id="playIcon"></i>
+                </button>
+                <button class="btn btn-sm btn-light me-2" onclick="nextContent()">
+                    <i class="bi bi-skip-forward-fill"></i>
+                </button>
+                <button class="btn btn-sm btn-light me-2" onclick="prevContent()">
+                    <i class="bi bi-skip-backward-fill"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="toggleEmergency()">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </button>
+            </div>
+            <div>
+                <small>Screen: TV-001</small><br>
+                <small id="currentTime">00:05</small> / <small id="totalTime">00:15</small>
+            </div>
+        </div>
+        
+        <!-- Controles de Áudio -->
+        <div class="audio-controls">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-volume-up me-2"></i>
+                <input type="range" class="form-range me-2" min="0" max="100" value="30" style="width: 100px;" onchange="changeVolume(this.value)">
+                <span id="volumeLevel">30%</span>
+            </div>
+            <button class="btn btn-sm btn-outline-light mt-1" onclick="toggleMute()">
+                <i class="bi bi-volume-mute" id="muteIcon"></i> Mute
+            </button>
+        </div>
+        
+        <!-- Informações da Playlist -->
+        <div class="playlist-info">
+            <strong id="playlistName">Playlist Principal</strong><br>
+            <small id="contentInfo">Item 1 de 5 • Vídeo Promocional 2024</small>
+        </div>
+        
+        <!-- Barra de Progresso -->
+        <div class="progress-bar" id="progressBar" style="width: 33%;"></div>
+        
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+        </div>
+        
+        <!-- Conteúdo Principal -->
+        <div id="contentContainer">
+            <!-- O conteúdo será carregado aqui dinamicamente -->
+        </div>
+        
+        <!-- Modo de Emergência -->
+        <div class="emergency-mode" id="emergencyMode">
+            <div>
+                <i class="bi bi-exclamation-triangle-fill mb-3" style="font-size: 5rem;"></i>
+                <h1>MODO DE EMERGÊNCIA</h1>
+                <p>Sistema em modo de emergência. Aguarde instruções.</p>
+            </div>
+        </div>
+        
+        <!-- Áudio de Fundo -->
+        <audio id="backgroundMusic" loop>
+            <source src="https://www.soundjay.com/misc/sounds/bg-music-1.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <script>
+        // Configuração da playlist
+        const playlist = [
+            {
+                type: 'video',
+                src: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4',
+                name: 'Vídeo Promocional 2024',
+                duration: 15
+            },
+            {
+                type: 'image',
+                src: 'https://picsum.photos/1920/1080?random=1',
+                name: 'Banner Principal',
+                duration: 8
+            },
+            {
+                type: 'url',
+                src: 'https://www.google.com/search?q=digital+signage&tbm=isch',
+                name: 'Página Web - Google',
+                duration: 12
+            },
+            {
+                type: 'video',
+                src: 'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4',
+                name: 'Tutorial Produtos',
+                duration: 10
+            },
+            {
+                type: 'image',
+                src: 'https://picsum.photos/1920/1080?random=2',
+                name: 'Promoção Janeiro',
+                duration: 6
+            }
+        ];
+
+        let currentIndex = 0;
+        let isPlaying = true;
+        let contentTimer = null;
+        let progressTimer = null;
+        let currentProgress = 0;
+        let isMuted = false;
+        let emergencyMode = false;
+
+        // Inicializar player
+        document.addEventListener('DOMContentLoaded', function() {
+            loadContent(currentIndex);
+            startBackgroundMusic();
+            updatePlaylistInfo();
+        });
+
+        function loadContent(index) {
+            const container = document.getElementById('contentContainer');
+            const content = playlist[index];
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            // Mostrar loading
+            loadingSpinner.style.display = 'block';
+            
+            // Limpar conteúdo anterior
+            container.innerHTML = '';
+            
+            setTimeout(() => {
+                if (content.type === 'video') {
+                    container.innerHTML = `
+                        <video class="content-display" autoplay muted>
+                            <source src="${content.src}" type="video/mp4">
+                        </video>
+                    `;
+                } else if (content.type === 'image') {
+                    container.innerHTML = `
+                        <img class="content-display" src="${content.src}" alt="${content.name}">
+                    `;
+                } else if (content.type === 'url') {
+                    container.innerHTML = `
+                        <iframe class="url-content" src="${content.src}"></iframe>
+                    `;
+                }
+                
+                // Esconder loading
+                loadingSpinner.style.display = 'none';
+                
+                // Iniciar timer para próximo conteúdo
+                if (isPlaying) {
+                    startContentTimer(content.duration);
+                    startProgressTimer(content.duration);
+                }
+                
+                updatePlaylistInfo();
+            }, 1000);
+        }
+
+        function startContentTimer(duration) {
+            clearTimeout(contentTimer);
+            contentTimer = setTimeout(() => {
+                if (isPlaying && !emergencyMode) {
+                    nextContent();
+                }
+            }, duration * 1000);
+        }
+
+        function startProgressTimer(duration) {
+            clearInterval(progressTimer);
+            currentProgress = 0;
+            const progressBar = document.getElementById('progressBar');
+            const currentTimeElement = document.getElementById('currentTime');
+            const totalTimeElement = document.getElementById('totalTime');
+            
+            totalTimeElement.textContent = formatTime(duration);
+            
+            progressTimer = setInterval(() => {
+                if (isPlaying && !emergencyMode) {
+                    currentProgress += 0.1;
+                    const percentage = (currentProgress / duration) * 100;
+                    progressBar.style.width = percentage + '%';
+                    currentTimeElement.textContent = formatTime(currentProgress);
+                    
+                    if (currentProgress >= duration) {
+                        clearInterval(progressTimer);
+                    }
+                }
+            }, 100);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function togglePlayback() {
+            isPlaying = !isPlaying;
+            const playIcon = document.getElementById('playIcon');
+            
+            if (isPlaying) {
+                playIcon.className = 'bi bi-pause-fill';
+                // Retomar timers
+                const currentContent = playlist[currentIndex];
+                const remainingTime = currentContent.duration - currentProgress;
+                startContentTimer(remainingTime);
+            } else {
+                playIcon.className = 'bi bi-play-fill';
+                // Pausar timers
+                clearTimeout(contentTimer);
+            }
+        }
+
+        function nextContent() {
+            currentIndex = (currentIndex + 1) % playlist.length;
+            loadContent(currentIndex);
+        }
+
+        function prevContent() {
+            currentIndex = currentIndex === 0 ? playlist.length - 1 : currentIndex - 1;
+            loadContent(currentIndex);
+        }
+
+        function updatePlaylistInfo() {
+            const playlistName = document.getElementById('playlistName');
+            const contentInfo = document.getElementById('contentInfo');
+            const currentContent = playlist[currentIndex];
+            
+            contentInfo.textContent = `Item ${currentIndex + 1} de ${playlist.length} • ${currentContent.name}`;
+        }
+
+        function startBackgroundMusic() {
+            const bgMusic = document.getElementById('backgroundMusic');
+            bgMusic.volume = 0.3;
+            bgMusic.play().catch(e => console.log('Autoplay bloqueado pelo navegador'));
+        }
+
+        function changeVolume(value) {
+            const bgMusic = document.getElementById('backgroundMusic');
+            const volumeLevel = document.getElementById('volumeLevel');
+            
+            bgMusic.volume = value / 100;
+            volumeLevel.textContent = value + '%';
+        }
+
+        function toggleMute() {
+            const bgMusic = document.getElementById('backgroundMusic');
+            const muteIcon = document.getElementById('muteIcon');
+            
+            isMuted = !isMuted;
+            bgMusic.muted = isMuted;
+            
+            if (isMuted) {
+                muteIcon.className = 'bi bi-volume-mute-fill';
+            } else {
+                muteIcon.className = 'bi bi-volume-mute';
+            }
+        }
+
+        function toggleEmergency() {
+            emergencyMode = !emergencyMode;
+            const emergencyDiv = document.getElementById('emergencyMode');
+            
+            if (emergencyMode) {
+                emergencyDiv.style.display = 'flex';
+                clearTimeout(contentTimer);
+                clearInterval(progressTimer);
+            } else {
+                emergencyDiv.style.display = 'none';
+                if (isPlaying) {
+                    const currentContent = playlist[currentIndex];
+                    const remainingTime = currentContent.duration - currentProgress;
+                    startContentTimer(remainingTime);
+                }
+            }
+        }
+
+        // Controles por teclado
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    togglePlayback();
+                    break;
+                case 'ArrowRight':
+                    nextContent();
+                    break;
+                case 'ArrowLeft':
+                    prevContent();
+                    break;
+                case 'Escape':
+                    toggleEmergency();
+                    break;
+                case 'm':
+                case 'M':
+                    toggleMute();
+                    break;
+            }
+        });
+
+        // Auto-hide do cursor após inatividade
+        let cursorTimeout;
+        function resetCursorTimer() {
+            clearTimeout(cursorTimeout);
+            document.body.style.cursor = 'default';
+            cursorTimeout = setTimeout(() => {
+                document.body.style.cursor = 'none';
+            }, 3000);
+        }
+
+        document.addEventListener('mousemove', resetCursorTimer);
+        resetCursorTimer();
+    </script>
+</body>
+</html>
