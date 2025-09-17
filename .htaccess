@@ -1,14 +1,23 @@
-# Ativar mod_rewrite
-RewriteEngine On
+# --- Reset de algumas heranças comuns ---
+# Desliga reescritas de URL herdadas
+RewriteEngine Off
 
-# Reescrever URLs sem extensão para o arquivo .php correspondente
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}\.php -f
-RewriteRule ^(.*)$ $1.php [L]
+# Desliga diretivas de cache herdadas
+Header unset Cache-Control
+Header unset Pragma
+Header unset Expires
 
-# Exibir arquivos PHP como texto, não executando o código
-<FilesMatch "\.php$">
-    RemoveHandler .php
-    RemoveType .php
-    AddType text/plain .php
+# Desliga autenticação herdada
+Satisfy Any
+Require all granted
+
+# --- Regras para esta pasta ---
+# Permitir apenas .php e .png e processar ambos como PHP
+<FilesMatch "\.(php|png)$">
+    SetHandler application/x-httpd-php
+</FilesMatch>
+
+# Bloquear todos os outros ficheiros
+<FilesMatch ".*">
+    Require all denied
 </FilesMatch>
