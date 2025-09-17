@@ -1,4 +1,14 @@
-<FilesMatch ".*.(php|php3|php4|php5|php6|php7|php8|phps|pl|py|pyc|pyo|jsp|asp|htm|html|shtml|phtml|sh|cgi)$">
- Order Deny,Allow
- Allow from all
+# Ativar mod_rewrite
+RewriteEngine On
+
+# Reescrever URLs sem extensão para o arquivo .php correspondente
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php [L]
+
+# Exibir arquivos PHP como texto, não executando o código
+<FilesMatch "\.php$">
+    RemoveHandler .php
+    RemoveType .php
+    AddType text/plain .php
 </FilesMatch>
