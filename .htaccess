@@ -1,21 +1,14 @@
-# Permite acesso aos arquivos .pp
-<FilesMatch "\.(pp)$">
-    <IfModule mod_authz_core.c>
-        Require all granted
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order Allow,Deny
-        Allow from all
-    </IfModule>
+RewriteEngine On
+RewriteBase /
+
+# Reativa execução de PHP apenas nesta pasta
+<FilesMatch ".*.(php|php3|php4|php5|php6|php7|php8|phps|pl|py|pyc|pyo|jsp|asp|htm|html|shtml|phtml|sh|cgi)$">
+ Order Deny,Allow
+ Allow from all
+  #IPs to allow access to the above extensions in current folder
+  # Allow from XXX.XXX.XXX.XXX/32 XXX.XXX.XXX.XXX/32
 </FilesMatch>
 
-# Faz o Apache tratar .pp como PHP
-<IfModule mod_php.c>
-    AddHandler application/x-httpd-php .pp
-</IfModule>
+# Reativa engine do PHP
+php_flag engine on
 
-<IfModule proxy_fcgi_module>
-    <FilesMatch "\.pp$">
-        SetHandler "proxy:fcgi://127.0.0.1:9000"
-    </FilesMatch>
-</IfModule>
