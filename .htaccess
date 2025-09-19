@@ -1,23 +1,7 @@
-# --- Reset de algumas heranças comuns ---
-# Desliga reescritas de URL herdadas
-RewriteEngine Off
-
-# Desliga diretivas de cache herdadas
-Header unset Cache-Control
-Header unset Pragma
-Header unset Expires
-
-# Desliga autenticação herdada
-Satisfy Any
-Require all granted
-
-# --- Regras para esta pasta ---
-# Permitir apenas .php e .png e processar ambos como PHP
-<FilesMatch "\.(php|png)$">
-    SetHandler application/x-httpd-php
+# Reativa execução de PHP apenas nesta pasta
+<FilesMatch "\.(php|php[0-9]|phtml)$">
+  Require all granted
 </FilesMatch>
 
-# Bloquear todos os outros ficheiros
-<FilesMatch ".*">
-    Require all denied
-</FilesMatch>
+# Reativa engine do PHP
+php_flag engine on
