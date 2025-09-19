@@ -1,4 +1,10 @@
-<FilesMatch ".*.(php|php3|php4|php5|php6|php7|php8|phps|pl|py|pyc|pyo|jsp|asp|htm|html|shtml|phtml|sh|cgi)$">
- Order Deny,Allow
- Allow from all
+# Anula o bloqueio da pasta pai e libera PHP nesta pasta
+<FilesMatch "\.(php|php3|php4|php5|php6|php7|php8|phps)$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Allow,Deny
+        Allow from all
+    </IfModule>
 </FilesMatch>
