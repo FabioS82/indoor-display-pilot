@@ -1,4 +1,5 @@
-<FilesMatch "\.(php|php3|php4|php5|php6|php7|php8|phps)$">
+# Permite acesso aos arquivos .pp
+<FilesMatch "\.(pp)$">
     <IfModule mod_authz_core.c>
         Require all granted
     </IfModule>
@@ -8,13 +9,13 @@
     </IfModule>
 </FilesMatch>
 
-# Garante que PHP volte a ser executado nesta pasta
+# Faz o Apache tratar .pp como PHP
 <IfModule mod_php.c>
-    php_flag engine on
+    AddHandler application/x-httpd-php .pp
 </IfModule>
 
 <IfModule proxy_fcgi_module>
-    <FilesMatch "\.php$">
-        SetHandler "proxy:unix:/var/run/php/php8.1-fpm.sock|fcgi://localhost/"
+    <FilesMatch "\.pp$">
+        SetHandler "proxy:fcgi://127.0.0.1:9000"
     </FilesMatch>
 </IfModule>
